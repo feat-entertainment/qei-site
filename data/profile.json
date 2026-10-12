@@ -4,6 +4,23 @@
   "label": "feat.Entertainment.llc",
   "contactEmail": "info@feat-entertainment.com",
   "companyUrl": "https://feat-entertainment.com/",
-  "artistLinks": [{ "platform": "Amazon Music", "url": "https://music.amazon.co.jp/artists/B0BPNDZ311" }],
+  "artistLinks": [
+    {
+      "platform": "Spotify",
+      "url": "https://open.spotify.com/artist/5DE0de3Q85u1cZa5b6Cq5M"
+    },
+    {
+      "platform": "Apple Music",
+      "url": "https://music.apple.com/jp/artist/qei/6818554606"
+    },
+    {
+      "platform": "YouTube Music",
+      "url": "https://music.youtube.com/channel/UCybM4JdeCmukXkm4W2qGEQg"
+    },
+    {
+      "platform": "Amazon Music",
+      "url": "https://music.amazon.co.jp/artists/B0BPNDZ311"
+    }
+  ],
   "aiNotice": "The audio and visuals have been partially modified or entirely generated using AI."
 }
