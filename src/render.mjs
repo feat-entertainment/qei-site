@@ -1,5 +1,5 @@
 // サイトの HTML を生成する(純粋関数)。戻り値は { 出力相対パス: HTML }。
-// 本体は index.html の 1 ページ。releases/<slug>/ は X 等でシェアしたときに曲のジャケットを出すための OGP 用ページで、開くとトップの曲の位置へ移動する
+// 本体は index.html の 1 ページ。releases/<slug>/ は曲ごとの SNS 告知用ページ(曲の OGP 付き)で、Discography のジャケットから開く
 import { isReleased } from "./data.mjs";
 import { html, raw } from "./html.mjs";
 import { icon, platformIcon } from "./icons.mjs";
@@ -7,6 +7,7 @@ import { icon, platformIcon } from "./icons.mjs";
 const fmtDate = (d) => d.replaceAll("-", ".");
 const shareUrl = (r) => `/releases/${r.slug}/`;
 const anchorUrl = (r) => `/#${r.slug}`;
+const xShareUrl = (text, url) => `https://x.com/intent/post?${new URLSearchParams({ text, url })}`;
 const byDateDesc = (a, b) => (a.date ?? a.releaseDate) < (b.date ?? b.releaseDate) ? 1 : (a.date ?? a.releaseDate) > (b.date ?? b.releaseDate) ? -1 : 0;
 const ext = (href, label, cls = "", iconName = null) =>
   html`<a class="${cls}" href="${href}" target="_blank" rel="noopener">${iconName ? icon(iconName) : ""}${label}</a>`;
@@ -14,7 +15,7 @@ const xHandle = (url) => `@${url.replace(/\/+$/, "").split("/").pop()}`;
 /** 配信サービスのアーティストページ(profile.json の artistLinks。無ければ空) */
 const artistLinkButtons = (profile) => (profile.artistLinks ?? []).map((l) => html` ${ext(l.url, l.platform, "btn", platformIcon(l.platform))}`);
 
-function layout(ctx, { path, title, description, image, redirect, body }) {
+function layout(ctx, { path, title, description, image, body }) {
   const { site, profile } = ctx;
   const name = site.artist.name;
   const fullTitle = title ? `${title} | ${name}` : `${name} Official Site`;
@@ -27,7 +28,6 @@ function layout(ctx, { path, title, description, image, redirect, body }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#000000">
-${redirect ? html`<meta http-equiv="refresh" content="0; url=${redirect}">` : ""}
 <title>${fullTitle}</title>
 <meta name="description" content="${desc}">
 <meta property="og:type" content="${path === "/" ? "website" : "article"}">
@@ -87,7 +87,7 @@ function upcomingBlock(r) {
 
 function card(r, today) {
   return html`<li ${withClass(stateAttrs(r, today), "card")} id="${r.slug}">
-  <img src="/${r.artwork}" alt="${r.title}" loading="lazy" width="600" height="600">
+  <a class="card-art" href="${shareUrl(r)}"><img src="/${r.artwork}" alt="${r.title}" loading="lazy" width="600" height="600"></a>
   <span class="card-title">${r.title}</span>
   ${r.titleEn && r.titleEn !== r.title ? html`<span class="card-title-en" lang="en">${r.titleEn}</span>` : ""}
   <span class="card-meta">${r.type} · ${fmtDate(r.releaseDate)}</span>
@@ -147,17 +147,26 @@ ${hero ? html`<section ${withClass(stateAttrs(hero, today), "hero")} id="top">
   return layout(ctx, { path: "/", body });
 }
 
-/** シェア用ページ: 曲の OGP を持ち、開くとトップの曲の位置へ移動する */
-function sharePage(ctx, r) {
-  const body = html`<p class="redirect"><a href="${anchorUrl(r)}">${r.title}</a></p>`;
-  return layout(ctx, {
-    path: shareUrl(r),
-    title: r.title,
-    description: `${ctx.site.artist.name}「${r.title}」${fmtDate(r.releaseDate)} Release`,
-    image: r.artwork,
-    redirect: anchorUrl(r),
-    body,
-  });
+/** 曲ごとの SNS 告知用ページ: 曲の OGP を持ち、ジャケット・配信ボタン・X でシェアを出す */
+function releasePage(ctx, r) {
+  const { site, profile, today } = ctx;
+  const pageUrl = `${profile.siteUrl}${shareUrl(r)}`;
+  const shareText = `${site.artist.name}「${r.title}」${fmtDate(r.releaseDate)} Release`;
+  const body = html`<article ${withClass(stateAttrs(r, today), "hero release")}>
+  <img class="hero-art" src="/${r.artwork}" alt="${r.title}" width="1200" height="1200">
+  <div class="hero-info">
+    <p class="eyebrow">${r.type}</p>
+    <h1 class="glitch" data-text="${r.title}">${r.title}</h1>
+    ${r.titleEn && r.titleEn !== r.title ? html`<p class="title-en" lang="en">${r.titleEn}</p>` : ""}
+    <p class="release-date">${fmtDate(r.releaseDate)} Release</p>
+    ${upcomingBlock(r)}
+    <div class="when-released">${linkList(r)}</div>
+    <p>${ext(xShareUrl(shareText, pageUrl), "Share on X", "btn", "x")}</p>
+    <p class="ai-notice small" lang="en">${profile.aiNotice}</p>
+    <p><a class="back" href="/#discography">← Discography</a></p>
+  </div>
+</article>`;
+  return layout(ctx, { path: shareUrl(r), title: r.title, description: shareText, image: r.artwork, body });
 }
 
 function notFoundPage(ctx) {
@@ -171,6 +180,6 @@ function notFoundPage(ctx) {
 
 export function renderSite(ctx) {
   const pages = { "index.html": homePage(ctx), "404.html": notFoundPage(ctx) };
-  for (const r of ctx.site.releases) pages[`releases/${r.slug}/index.html`] = sharePage(ctx, r);
+  for (const r of ctx.site.releases) pages[`releases/${r.slug}/index.html`] = releasePage(ctx, r);
   return pages;
 }

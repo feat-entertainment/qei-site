@@ -34,13 +34,37 @@ test("未リリースの曲カードは Coming Soon とカウントダウン", (
   assert.match(top, /<li class="card" data-release-date="2026-10-30" id="404-humanity">[\s\S]*?Coming Soon[\s\S]*?data-countdown="2026-10-30"[\s\S]*?<\/li>/);
 });
 
-test("シェア用ページは曲の OGP を持ち、トップの曲の位置へ移動する", () => {
+test("曲ページ(SNS 告知用)は曲の OGP を持ち、トップへ自動で戻らない", () => {
   const page = render()["releases/cached-emotion/index.html"];
   assert.match(page, /<meta property="og:image" content="https:\/\/qei.feat-entertainment.com\/assets\/artwork\/cached-emotion.jpg">/);
   assert.match(page, /<meta property="og:url" content="https:\/\/qei.feat-entertainment.com\/releases\/cached-emotion\/">/);
   assert.match(page, /<title>感情コピー \| QEI<\/title>/);
-  assert.match(page, /<meta http-equiv="refresh" content="0; url=\/#cached-emotion">/);
-  assert.doesNotMatch(render()["index.html"], /http-equiv="refresh"/);
+  assert.doesNotMatch(page, /http-equiv="refresh"/);
+});
+
+test("曲ページはジャケット・タイトル・配信ボタン・X でシェア・戻るリンクを持つ", () => {
+  const page = render()["releases/cached-emotion/index.html"];
+  assert.match(page, /<article class="hero release is-released" data-release-date="2026-10-09">/);
+  assert.match(page, /<img class="hero-art" src="\/assets\/artwork\/cached-emotion.jpg"/);
+  assert.match(page, /<h1[^>]*>感情コピー<\/h1>/);
+  assert.match(page, /href="https:\/\/open.spotify.com\/album\/7pmF8zRKoF6kwvv532XTwC"/);
+  const share = page.match(/href="(https:\/\/x\.com\/intent\/post\?[^"]+)"/);
+  assert.ok(share, "X でシェアのリンクが無い");
+  const params = new URL(share[1].replaceAll("&amp;", "&")).searchParams;
+  assert.equal(params.get("url"), "https://qei.feat-entertainment.com/releases/cached-emotion/");
+  assert.match(params.get("text"), /感情コピー/);
+  assert.match(page, /href="\/#discography"/);
+});
+
+test("未リリースの曲ページは Coming Soon とカウントダウン", () => {
+  const page = render()["releases/404-humanity/index.html"];
+  assert.match(page, /<article class="hero release" data-release-date="2026-10-30">/);
+  assert.match(page, /Coming Soon[\s\S]*data-countdown="2026-10-30"/);
+});
+
+test("Discography のジャケットは曲ページへのリンク", () => {
+  const top = render()["index.html"];
+  assert.match(top, /<li class="card[^"]*"[^>]*id="cached-emotion">\s*<a class="card-art" href="\/releases\/cached-emotion\/"><img /);
 });
 
 test("AI 制作の公言は全ページにあり、ツール名・非公開情報は出ない", () => {
