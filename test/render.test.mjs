@@ -73,7 +73,7 @@ test("内部リンクはすべて出力ページ・assets・トップのセク�
   const exists = (href) => {
     const [p, frag] = href.replace(/^\//, "").split("#");
     if (frag) return p === "" && pages["index.html"].includes(`id="${frag}"`);
-    return p === "" || p in pages || `${p}index.html` in pages || /^(assets\/|styles.css$|main.js$)/.test(p);
+    return p === "" || p in pages || `${p}index.html` in pages || /^(assets\/|styles\.css(\?v=\w+)?$|main\.js(\?v=\w+)?$)/.test(p);
   };
   for (const [file, page] of Object.entries(pages)) {
     for (const [, href] of page.matchAll(/(?:href|src)="(\/[^"]*)"/g)) assert.ok(exists(href), `${file}: ${href}`);

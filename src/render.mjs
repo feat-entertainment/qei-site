@@ -40,8 +40,8 @@ ${ogImage ? html`<meta property="og:image" content="${ogImage}">` : ""}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Share+Tech+Mono&display=swap">
-<link rel="stylesheet" href="/styles.css">
-<script src="/main.js" defer></script>
+<link rel="stylesheet" href="${ctx.assetUrls?.css ?? "/styles.css"}">
+<script src="${ctx.assetUrls?.js ?? "/main.js"}" defer></script>
 </head>
 <body>
 <header class="site-header">

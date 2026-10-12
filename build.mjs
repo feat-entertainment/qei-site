@@ -1,5 +1,6 @@
 // data/ と assets/ から site/ に静的サイトを生成する。`node build.mjs`
-import { access, cp, mkdir, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { access, cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { jstToday, loadData } from "./src/data.mjs";
@@ -30,7 +31,11 @@ export async function build({ root = HERE, outDir = path.join(HERE, "site"), tod
   for (const r of data.site.releases) await mustExist(path.join(root, r.artwork), `「${r.title}」のジャケット`);
   if (data.site.artist.logo) await mustExist(path.join(root, data.site.artist.logo), "ロゴ");
 
-  const pages = renderSite({ ...data, today });
+  // CSS / JS は中身のハッシュを URL に付ける(ブラウザに古い版をキャッシュから使わせない)
+  const version = async (f) => createHash("sha256").update(await readFile(path.join(HERE, "src", f))).digest("hex").slice(0, 10);
+  const assetUrls = { css: `/styles.css?v=${await version("styles.css")}`, js: `/main.js?v=${await version("main.js")}` };
+
+  const pages = renderSite({ ...data, today, assetUrls });
   for (const [rel, body] of Object.entries(pages)) {
     // 語そのものはログ(公開される Actions ログ)に出さない
     if (hasForbiddenWord(body, forbidden)) throw new Error(`${rel} に公開禁止語が含まれています`);

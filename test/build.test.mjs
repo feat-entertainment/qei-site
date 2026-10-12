@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { access, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { build } from "../build.mjs";
 import { sha256 } from "../src/forbidden.mjs";
 import { fixture, writeFixtureRoot } from "./fixture.mjs";
@@ -21,6 +22,17 @@ test("ページ・アセット・CNAME を出力する", async () => {
     await access(path.join(outDir, f));
   }
   assert.equal((await readFile(path.join(outDir, "CNAME"), "utf8")).trim(), "qei.feat-entertainment.com");
+});
+
+test("CSS / JS の URL に中身のハッシュを付け、キャッシュされた古い版を使わせない", async () => {
+  const { root, outDir } = await setup();
+  await build({ root, outDir, today: "2026-10-12" });
+  const top = await readFile(path.join(outDir, "index.html"), "utf8");
+  const css = await readFile(path.join(outDir, "styles.css"));
+  const js = await readFile(path.join(outDir, "main.js"));
+  const short = (buf) => createHash("sha256").update(buf).digest("hex").slice(0, 10);
+  assert.ok(top.includes(`href="/styles.css?v=${short(css)}"`), "styles.css にハッシュが付いていない");
+  assert.ok(top.includes(`src="/main.js?v=${short(js)}"`), "main.js にハッシュが付いていない");
 });
 
 test("ジャケットが無ければ曲名つきで失敗", async () => {
