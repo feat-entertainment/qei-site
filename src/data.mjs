@@ -55,6 +55,12 @@ export function validateProfile(profile) {
   for (const k of ["siteUrl", "x", "companyUrl"]) if (!isHttps(profile?.[k])) fail("profile.json", `${k} が https の URL ではありません`);
   for (const k of ["label", "contactEmail"]) if (!isText(profile[k])) fail("profile.json", `${k} がありません`);
   if (!isText(profile.aiNotice)) fail("profile.json", "aiNotice がありません");
+  if (profile.artistLinks != null) {
+    if (!Array.isArray(profile.artistLinks)) fail("profile.json", "artistLinks が配列ではありません");
+    profile.artistLinks.forEach((l, i) => {
+      if (!isText(l?.platform) || !isHttps(l?.url)) fail(`profile.json artistLinks[${i}]`, "platform / url(https)が不正");
+    });
+  }
   return profile;
 }
 

@@ -45,6 +45,12 @@ test("news / profile の不正", () => {
   const p = fixture().profile;
   p.aiNotice = "";
   assert.throws(() => validateProfile(p), /aiNotice/);
+  const q = fixture().profile;
+  q.artistLinks[0].url = "http://example.com";
+  assert.throws(() => validateProfile(q), /artistLinks\[0\]/);
+  const r = fixture().profile;
+  delete r.artistLinks;
+  assert.equal(validateProfile(r), r);
 });
 
 test("loadData は 3 つの JSON を読んで検証する", async () => {

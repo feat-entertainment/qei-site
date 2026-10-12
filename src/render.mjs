@@ -9,6 +9,8 @@ const anchorUrl = (r) => `/#${r.slug}`;
 const byDateDesc = (a, b) => (a.date ?? a.releaseDate) < (b.date ?? b.releaseDate) ? 1 : (a.date ?? a.releaseDate) > (b.date ?? b.releaseDate) ? -1 : 0;
 const ext = (href, label, cls = "") => html`<a class="${cls}" href="${href}" target="_blank" rel="noopener">${label}</a>`;
 const xHandle = (url) => `@${url.replace(/\/+$/, "").split("/").pop()}`;
+/** 配信サービスのアーティストページ(profile.json の artistLinks。無ければ空) */
+const artistLinkButtons = (profile) => (profile.artistLinks ?? []).map((l) => html` ${ext(l.url, l.platform, "btn")}`);
 
 function layout(ctx, { path, title, description, image, redirect, body }) {
   const { site, profile } = ctx;
@@ -54,7 +56,7 @@ ${body}
 </main>
 <footer class="site-footer">
   <p class="ai-notice" lang="en">${profile.aiNotice}</p>
-  <p>${ext(profile.x, `X ${xHandle(profile.x)}`)}</p>
+  <p class="footer-links">${ext(profile.x, `X ${xHandle(profile.x)}`)}${(profile.artistLinks ?? []).map((l) => html` · ${ext(l.url, l.platform)}`)}</p>
   <p class="copyright">© ${ctx.today.slice(0, 4)} ${profile.label}</p>
 </footer>
 </body>
@@ -124,7 +126,7 @@ ${hero ? html`<section ${withClass(stateAttrs(hero, today), "hero")} id="top">
 </section>` : ""}
 <section class="intro">
   <p class="ai-notice" lang="en">${profile.aiNotice}</p>
-  <p>${ext(profile.x, `Follow ${xHandle(profile.x)} on X`, "btn")}</p>
+  <p class="intro-links">${ext(profile.x, `Follow ${xHandle(profile.x)} on X`, "btn")}${artistLinkButtons(profile)}</p>
 </section>
 <section class="section" id="discography">
   <h2 class="section-title">Discography</h2>

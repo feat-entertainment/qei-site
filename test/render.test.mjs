@@ -100,3 +100,12 @@ test("ヒーローは最新の配信中リリース、無ければ最も近い�
   f.site.releases[0].releaseDate = "2026-11-01";
   assert.match(render(f)["index.html"], /class="hero"[^>]*>[\s\S]*?404 Humanity/);
 });
+
+test("アーティストページのリンクを紹介欄とフッターに出す", () => {
+  const top = render()["index.html"];
+  const hits = top.match(/href="https:\/\/music.amazon.co.jp\/artists\/B0BPNDZ311"/g) ?? [];
+  assert.equal(hits.length, 2);
+  const f = fixture();
+  delete f.profile.artistLinks;
+  assert.doesNotMatch(render(f)["index.html"], /amazon/);
+});

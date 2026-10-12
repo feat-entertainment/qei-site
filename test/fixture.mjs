@@ -27,6 +27,7 @@ export function fixture() {
       label: "feat.Entertainment.llc",
       contactEmail: "info@feat-entertainment.com",
       companyUrl: "https://feat-entertainment.com/",
+      artistLinks: [{ platform: "Amazon Music", url: "https://music.amazon.co.jp/artists/B0BPNDZ311" }],
       aiNotice: "The audio and visuals have been partially modified or entirely generated using AI.",
     },
   };

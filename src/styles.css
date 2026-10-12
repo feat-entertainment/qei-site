@@ -53,6 +53,7 @@ img { display: block; max-width: 100%; height: auto; }
 .intro { margin: 48px 0 0; padding: 24px; border: 1px solid var(--line); background: var(--surface); }
 .ai-notice { color: var(--muted); font-size: 0.9rem; }
 .intro .ai-notice { color: var(--fg); font-size: 1rem; }
+.intro-links { display: flex; flex-wrap: wrap; gap: 10px; }
 
 .cards { list-style: none; padding: 0; margin: 0; display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 @media (min-width: 760px) { .cards { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); } }
