@@ -2,15 +2,17 @@
 // 本体は index.html の 1 ページ。releases/<slug>/ は X 等でシェアしたときに曲のジャケットを出すための OGP 用ページで、開くとトップの曲の位置へ移動する
 import { isReleased } from "./data.mjs";
 import { html, raw } from "./html.mjs";
+import { icon, platformIcon } from "./icons.mjs";
 
 const fmtDate = (d) => d.replaceAll("-", ".");
 const shareUrl = (r) => `/releases/${r.slug}/`;
 const anchorUrl = (r) => `/#${r.slug}`;
 const byDateDesc = (a, b) => (a.date ?? a.releaseDate) < (b.date ?? b.releaseDate) ? 1 : (a.date ?? a.releaseDate) > (b.date ?? b.releaseDate) ? -1 : 0;
-const ext = (href, label, cls = "") => html`<a class="${cls}" href="${href}" target="_blank" rel="noopener">${label}</a>`;
+const ext = (href, label, cls = "", iconName = null) =>
+  html`<a class="${cls}" href="${href}" target="_blank" rel="noopener">${iconName ? icon(iconName) : ""}${label}</a>`;
 const xHandle = (url) => `@${url.replace(/\/+$/, "").split("/").pop()}`;
 /** 配信サービスのアーティストページ(profile.json の artistLinks。無ければ空) */
-const artistLinkButtons = (profile) => (profile.artistLinks ?? []).map((l) => html` ${ext(l.url, l.platform, "btn")}`);
+const artistLinkButtons = (profile) => (profile.artistLinks ?? []).map((l) => html` ${ext(l.url, l.platform, "btn", platformIcon(l.platform))}`);
 
 function layout(ctx, { path, title, description, image, redirect, body }) {
   const { site, profile } = ctx;
@@ -48,7 +50,7 @@ ${ogImage ? html`<meta property="og:image" content="${ogImage}">` : ""}
     <a href="/#discography">Discography</a>
     <a href="/#news">News</a>
     <a href="/#contact">Contact</a>
-    ${ext(profile.x, "X", "nav-x")}
+    ${ext(profile.x, "X", "nav-x", "x")}
   </nav>
 </header>
 <main class="main">
@@ -56,7 +58,7 @@ ${body}
 </main>
 <footer class="site-footer">
   <p class="ai-notice" lang="en">${profile.aiNotice}</p>
-  <p class="footer-links">${ext(profile.x, `X ${xHandle(profile.x)}`)}${(profile.artistLinks ?? []).map((l) => html` · ${ext(l.url, l.platform)}`)}</p>
+  <p class="footer-links">${ext(profile.x, `X ${xHandle(profile.x)}`, "", "x")}${(profile.artistLinks ?? []).map((l) => html` · ${ext(l.url, l.platform, "", platformIcon(l.platform))}`)}</p>
   <p class="copyright">© ${ctx.today.slice(0, 4)} ${profile.label}</p>
 </footer>
 </body>
@@ -65,8 +67,8 @@ ${body}
 }
 
 function linkList(r) {
-  if (r.links.length) return html`<ul class="links">${r.links.map((l) => html`<li>${ext(l.url, l.platform, "btn")}</li>`)}</ul>`;
-  if (r.preSaveUrl) return html`<ul class="links"><li>${ext(r.preSaveUrl, "Listen", "btn btn-primary")}</li></ul>`;
+  if (r.links.length) return html`<ul class="links">${r.links.map((l) => html`<li>${ext(l.url, l.platform, "btn", platformIcon(l.platform))}</li>`)}</ul>`;
+  if (r.preSaveUrl) return html`<ul class="links"><li>${ext(r.preSaveUrl, "Listen", "btn btn-primary", "note")}</li></ul>`;
   return "";
 }
 
@@ -79,7 +81,7 @@ function upcomingBlock(r) {
   return html`<div class="when-upcoming">
   <p class="badge">Coming Soon</p>
   <p class="countdown" data-countdown="${r.releaseDate}"></p>
-  ${r.preSaveUrl ? html`<p>${ext(r.preSaveUrl, "Pre-save", "btn btn-primary")}</p>` : ""}
+  ${r.preSaveUrl ? html`<p>${ext(r.preSaveUrl, "Pre-save", "btn btn-primary", "note")}</p>` : ""}
 </div>`;
 }
 
@@ -126,7 +128,7 @@ ${hero ? html`<section ${withClass(stateAttrs(hero, today), "hero")} id="top">
 </section>` : ""}
 <section class="intro">
   <p class="ai-notice" lang="en">${profile.aiNotice}</p>
-  <p class="intro-links">${ext(profile.x, `Follow ${xHandle(profile.x)} on X`, "btn")}${artistLinkButtons(profile)}</p>
+  <p class="intro-links">${ext(profile.x, `Follow ${xHandle(profile.x)} on X`, "btn", "x")}${artistLinkButtons(profile)}</p>
 </section>
 <section class="section" id="discography">
   <h2 class="section-title">Discography</h2>
@@ -139,8 +141,8 @@ ${hero ? html`<section ${withClass(stateAttrs(hero, today), "hero")} id="top">
 <section class="section contact" id="contact">
   <h2 class="section-title">Contact</h2>
   <p>お仕事のご依頼・お問い合わせは、所属レーベル ${profile.label} までご連絡ください。</p>
-  <p><a class="btn btn-primary" href="mailto:${profile.contactEmail}">${profile.contactEmail}</a></p>
-  <p>${ext(profile.companyUrl, `${profile.label} Website`, "btn")} ${ext(profile.x, `X ${xHandle(profile.x)}`, "btn")}</p>
+  <p><a class="btn btn-primary" href="mailto:${profile.contactEmail}">${icon("mail")}${profile.contactEmail}</a></p>
+  <p>${ext(profile.companyUrl, `${profile.label} Website`, "btn", "globe")} ${ext(profile.x, `X ${xHandle(profile.x)}`, "btn", "x")}</p>
 </section>`;
   return layout(ctx, { path: "/", body });
 }

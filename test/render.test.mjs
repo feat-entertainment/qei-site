@@ -109,3 +109,21 @@ test("アーティストページのリンクを紹介欄とフッターに出�
   delete f.profile.artistLinks;
   assert.doesNotMatch(render(f)["index.html"], /amazon/);
 });
+
+test("各リンクにアイコンが付く(ブランドに無いものは音符)", () => {
+  const top = render()["index.html"];
+  const iconOf = (re) => {
+    const m = top.match(re);
+    assert.ok(m, `リンクが無い: ${re}`);
+    return m[0];
+  };
+  const svg = /<svg class="icon"[^>]*aria-hidden="true"[^>]*><path d="([^"]+)"\/><\/svg>/;
+  const spotify = iconOf(/<a class="btn" href="https:\/\/open.spotify.com[^"]*"[^>]*>[\s\S]*?<\/a>/);
+  const amazon = iconOf(/<a class="btn" href="https:\/\/music.amazon.co.jp[^"]*"[^>]*>[\s\S]*?<\/a>/);
+  const mail = iconOf(/<a class="btn btn-primary" href="mailto:[^"]*"[^>]*>[\s\S]*?<\/a>/);
+  const x = iconOf(/<a class="btn" href="https:\/\/x.com\/QEIrdz"[^>]*>[\s\S]*?<\/a>/);
+  for (const a of [spotify, amazon, mail, x]) assert.match(a, svg);
+  const paths = [spotify, amazon, mail, x].map((a) => a.match(svg)[1]);
+  assert.equal(new Set(paths).size, 4, "アイコンがサービスごとに違う");
+  assert.match(spotify, /Spotify<\/a>$/);
+});

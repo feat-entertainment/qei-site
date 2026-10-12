@@ -42,8 +42,10 @@ img { display: block; max-width: 100%; height: auto; }
 .title-en { font-family: var(--mono); color: var(--muted); margin: 0; }
 .release-date { font-family: var(--mono); color: var(--muted); }
 
-.btn { display: inline-block; padding: 10px 18px; border: 1px solid var(--fg); text-decoration: none; font-family: var(--mono); letter-spacing: 0.08em; transition: background 0.15s, color 0.15s; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border: 1px solid var(--fg); text-decoration: none; font-family: var(--mono); letter-spacing: 0.08em; transition: background 0.15s, color 0.15s; }
 .btn:hover { background: var(--fg); color: var(--bg); }
+.icon { flex: none; width: 1.1em; height: 1.1em; }
+a:not(.btn) > .icon { display: inline-block; vertical-align: -0.18em; margin-right: 0.35em; }
 .btn-primary { border-color: var(--accent); background: var(--accent); color: #fff; }
 .btn-primary:hover { background: transparent; color: var(--accent); }
 .links { list-style: none; padding: 0; margin: 16px 0; display: flex; flex-wrap: wrap; gap: 10px; }
