@@ -12,26 +12,35 @@ test("html は値をエスケープし raw はそのまま", () => {
   assert.equal(String(html`<p title="${'"<x>'}">${raw("<b>ok</b>")}</p>`), '<p title="&quot;&lt;x&gt;">' + "<b>ok</b></p>");
 });
 
-test("全ページが出力される", () => {
+test("トップ 1 ページ + 404 + 曲ごとのシェア用ページを出力する", () => {
   assert.deepEqual(Object.keys(render()).sort(), [
-    "404.html", "contact/index.html", "discography/index.html", "index.html", "news/index.html",
-    "releases/404-humanity/index.html", "releases/cached-emotion/index.html",
+    "404.html", "index.html", "releases/404-humanity/index.html", "releases/cached-emotion/index.html",
   ]);
 });
 
-test("配信中の曲ページは配信ボタンと is-released を持つ", () => {
-  const page = render()["releases/cached-emotion/index.html"];
-  assert.match(page, /class="release is-released"/);
-  assert.match(page, /href="https:\/\/open.spotify.com\/album\/7pmF8zRKoF6kwvv532XTwC"/);
-  assert.match(page, /<meta property="og:image" content="https:\/\/qei.feat-entertainment.com\/assets\/artwork\/cached-emotion.jpg">/);
-  assert.match(page, /<title>感情コピー \| QEI<\/title>/);
+test("トップに Discography・News・Contact のセクションがある", () => {
+  const top = render()["index.html"];
+  for (const id of ["discography", "news", "contact"]) assert.match(top, new RegExp(`<section[^>]* id="${id}"`));
+  assert.match(top, /href="mailto:info@feat-entertainment.com"/);
 });
 
-test("未リリースの曲ページは Coming Soon とカウントダウン", () => {
-  const page = render()["releases/404-humanity/index.html"];
-  assert.match(page, /class="release" data-release-date="2026-10-30"/);
-  assert.match(page, /Coming Soon/);
-  assert.match(page, /data-countdown="2026-10-30"/);
+test("配信中の曲カードは配信ボタンと is-released を持つ", () => {
+  const top = render()["index.html"];
+  assert.match(top, /<li class="card is-released" data-release-date="2026-10-09" id="cached-emotion">[\s\S]*?open.spotify.com\/album\/7pmF8zRKoF6kwvv532XTwC[\s\S]*?<\/li>/);
+});
+
+test("未リリースの曲カードは Coming Soon とカウントダウン", () => {
+  const top = render()["index.html"];
+  assert.match(top, /<li class="card" data-release-date="2026-10-30" id="404-humanity">[\s\S]*?Coming Soon[\s\S]*?data-countdown="2026-10-30"[\s\S]*?<\/li>/);
+});
+
+test("シェア用ページは曲の OGP を持ち、トップの曲の位置へ移動する", () => {
+  const page = render()["releases/cached-emotion/index.html"];
+  assert.match(page, /<meta property="og:image" content="https:\/\/qei.feat-entertainment.com\/assets\/artwork\/cached-emotion.jpg">/);
+  assert.match(page, /<meta property="og:url" content="https:\/\/qei.feat-entertainment.com\/releases\/cached-emotion\/">/);
+  assert.match(page, /<title>感情コピー \| QEI<\/title>/);
+  assert.match(page, /<meta http-equiv="refresh" content="0; url=\/#cached-emotion">/);
+  assert.doesNotMatch(render()["index.html"], /http-equiv="refresh"/);
 });
 
 test("AI 制作の公言は全ページにあり、ツール名・非公開情報は出ない", () => {
@@ -59,10 +68,11 @@ test("X へのリンクが全ページにある", () => {
   for (const page of Object.values(render())) assert.match(page, /href="https:\/\/x.com\/QEIrdz"/);
 });
 
-test("内部リンクはすべて出力ページか assets を指す", () => {
+test("内部リンクはすべて出力ページ・assets・トップのセクションを指す", () => {
   const pages = render();
   const exists = (href) => {
-    const p = href.replace(/^\//, "");
+    const [p, frag] = href.replace(/^\//, "").split("#");
+    if (frag) return p === "" && pages["index.html"].includes(`id="${frag}"`);
     return p === "" || p in pages || `${p}index.html` in pages || /^(assets\/|styles.css$|main.js$)/.test(p);
   };
   for (const [file, page] of Object.entries(pages)) {
@@ -73,7 +83,7 @@ test("内部リンクはすべて出力ページか assets を指す", () => {
 test("タイトルの HTML はエスケープされる", () => {
   const f = fixture();
   f.site.releases[0].title = "<script>x</script>";
-  assert.doesNotMatch(render(f)["releases/cached-emotion/index.html"], /<script>x/);
+  for (const page of Object.values(render(f))) assert.doesNotMatch(page, /<script>x/);
 });
 
 test("newsItems は配信済みリリースを自動追加し、未来の記事は出さない", () => {
@@ -81,11 +91,12 @@ test("newsItems は配信済みリリースを自動追加し、未来の記事�
   f.news.push({ date: "2026-12-01", title: "未来の記事" });
   const items = newsItems(f.site, f.news, TODAY);
   assert.deepEqual(items.map((n) => n.date), ["2026-10-09", "2026-10-01"]);
-  assert.equal(items[0].url, "/releases/cached-emotion/");
+  assert.equal(items[0].url, "/#cached-emotion");
 });
 
-test("トップは最新の配信中リリースと次のリリースを出す", () => {
-  const top = render()["index.html"];
-  assert.match(top, /class="hero[^"]*"[\s\S]*感情コピー/);
-  assert.match(top, /Next Release[\s\S]*404 Humanity/);
+test("ヒーローは最新の配信中リリース、無ければ最も近い未リリース", () => {
+  assert.match(render()["index.html"], /class="hero is-released"[^>]*>[\s\S]*?感情コピー/);
+  const f = fixture();
+  f.site.releases[0].releaseDate = "2026-11-01";
+  assert.match(render(f)["index.html"], /class="hero"[^>]*>[\s\S]*?404 Humanity/);
 });
