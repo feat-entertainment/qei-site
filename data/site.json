@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-12T02:38:17.560Z",
+  "generatedAt": "2026-10-12T04:52:50.572Z",
   "artist": {
     "name": "QEI",
     "reading": "ケイ",
@@ -26,6 +26,10 @@
         {
           "platform": "YouTube Music",
           "url": "https://music.youtube.com/playlist?list=OLAK5uy_nIrywTOcrmpJwohvJIKGVDKOSYUj0MqH4"
+        },
+        {
+          "platform": "Amazon Music",
+          "url": "https://music.amazon.co.jp/albums/B0HLV244VB"
         }
       ]
     },
