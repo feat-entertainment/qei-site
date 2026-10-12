@@ -1,0 +1,95 @@
+:root {
+  --bg: #000;
+  --surface: #0b0b0d;
+  --line: #222228;
+  --fg: #ececf0;
+  --muted: #8a8a96;
+  --accent: #ff2d55;
+  --accent-2: #2de2ff;
+  --font: "Noto Sans JP", system-ui, sans-serif;
+  --mono: "Share Tech Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+img { display: block; max-width: 100%; height: auto; }
+
+.site-header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 16px; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--mono); font-size: 1.5rem; letter-spacing: 0.15em; }
+.brand img { height: 36px; width: 36px; }
+.nav { display: flex; gap: 16px; font-family: var(--mono); font-size: 0.9rem; letter-spacing: 0.08em; }
+.nav a { text-decoration: none; color: var(--muted); }
+.nav a:hover, .nav a[aria-current="page"] { color: var(--fg); }
+.nav a[aria-current="page"] { box-shadow: inset 0 -2px 0 var(--accent); }
+
+.main { max-width: 1080px; margin: 0 auto; padding: 32px 16px 64px; }
+.page-title, .section-title { font-family: var(--mono); letter-spacing: 0.12em; text-transform: uppercase; }
+.page-title { font-size: 2rem; margin: 0 0 24px; }
+.section-title { font-size: 1.1rem; color: var(--muted); margin: 48px 0 16px; }
+.eyebrow { font-family: var(--mono); color: var(--accent-2); letter-spacing: 0.15em; text-transform: uppercase; margin: 0; }
+.muted, .small { color: var(--muted); }
+.small { font-size: 0.85rem; }
+
+/* 表示切替: data-release-date を持つ要素に is-released が付く */
+[data-release-date].is-released .when-upcoming,
+[data-release-date]:not(.is-released) .when-released { display: none; }
+
+.hero, .release { display: grid; gap: 24px; align-items: center; }
+@media (min-width: 760px) { .hero, .release { grid-template-columns: 1fr 1fr; gap: 40px; } }
+.hero-art, .release-art { width: 100%; aspect-ratio: 1; object-fit: cover; border: 1px solid var(--line); }
+.hero h1, .release h1 { font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.2; margin: 8px 0; }
+.title-en { font-family: var(--mono); color: var(--muted); margin: 0; }
+.release-date { font-family: var(--mono); color: var(--muted); }
+
+.btn { display: inline-block; padding: 10px 18px; border: 1px solid var(--fg); text-decoration: none; font-family: var(--mono); letter-spacing: 0.08em; transition: background 0.15s, color 0.15s; }
+.btn:hover { background: var(--fg); color: var(--bg); }
+.btn-primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+.btn-primary:hover { background: transparent; color: var(--accent); }
+.links { list-style: none; padding: 0; margin: 16px 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.badge { display: inline-block; font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.12em; color: var(--bg); background: var(--accent-2); padding: 2px 8px; margin: 8px 0; }
+.countdown { font-family: var(--mono); font-size: 1.6rem; letter-spacing: 0.1em; color: var(--accent); margin: 4px 0; }
+
+.intro { margin: 48px 0 0; padding: 24px; border: 1px solid var(--line); background: var(--surface); }
+.ai-notice { color: var(--muted); font-size: 0.9rem; }
+.intro .ai-notice { color: var(--fg); font-size: 1rem; }
+
+.cards { list-style: none; padding: 0; margin: 0; display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+@media (min-width: 760px) { .cards { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); } }
+.card a { display: grid; gap: 4px; text-decoration: none; position: relative; }
+.card img { aspect-ratio: 1; object-fit: cover; border: 1px solid var(--line); transition: transform 0.2s, border-color 0.2s; }
+.card a:hover img { transform: translateY(-2px); border-color: var(--accent); }
+.card-title { font-weight: 700; }
+.card-meta { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+.card .badge { position: absolute; top: 8px; left: 8px; margin: 0; }
+.next .countdown { margin-top: 12px; }
+
+.news { list-style: none; padding: 0; margin: 0; }
+.news li { display: grid; grid-template-columns: 7em 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.news time { font-family: var(--mono); color: var(--muted); }
+.news p { margin: 4px 0 0; color: var(--muted); }
+.more, .back { font-family: var(--mono); color: var(--muted); }
+
+.contact p { margin: 0 0 16px; }
+.contact .btn { margin: 0 8px 8px 0; }
+.not-found { text-align: center; padding: 48px 0; }
+.not-found h1 { font-family: var(--mono); font-size: 5rem; margin: 0; }
+
+.site-footer { border-top: 1px solid var(--line); padding: 32px 16px; text-align: center; font-size: 0.85rem; color: var(--muted); }
+.site-footer p { margin: 0 0 8px; }
+.copyright { font-family: var(--mono); }
+
+/* グリッチ(見出し) */
+.glitch { position: relative; display: inline-block; }
+.glitch::before, .glitch::after { content: attr(data-text); position: absolute; inset: 0; pointer-events: none; }
+.glitch::before { color: var(--accent); transform: translate(2px, 0); clip-path: inset(0 0 60% 0); animation: glitch-a 3.2s infinite steps(1); mix-blend-mode: screen; }
+.glitch::after { color: var(--accent-2); transform: translate(-2px, 0); clip-path: inset(55% 0 0 0); animation: glitch-b 2.7s infinite steps(1); mix-blend-mode: screen; }
+@keyframes glitch-a { 0%, 92%, 100% { transform: translate(0); opacity: 0; } 93% { transform: translate(3px, -1px); opacity: 1; } 96% { transform: translate(-2px, 1px); opacity: 1; } }
+@keyframes glitch-b { 0%, 88%, 100% { transform: translate(0); opacity: 0; } 89% { transform: translate(-3px, 1px); opacity: 1; } 94% { transform: translate(2px, 0); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .glitch::before, .glitch::after { animation: none; opacity: 0; } }
+
+@media (max-width: 480px) {
+  .nav { gap: 12px; font-size: 0.8rem; }
+  .news li { grid-template-columns: 1fr; gap: 2px; }
+}

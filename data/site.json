@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-10-12T02:38:17.560Z",
+  "artist": {
+    "name": "QEI",
+    "reading": "ケイ",
+    "logo": "assets/logo.jpg"
+  },
+  "releases": [
+    {
+      "slug": "cached-emotion",
+      "title": "感情コピー",
+      "titleEn": "Cached Emotion",
+      "type": "Single",
+      "releaseDate": "2026-10-09",
+      "artwork": "assets/artwork/cached-emotion.jpg",
+      "preSaveUrl": "https://distrokid.com/hyperfollow/qei/G9J3Xz2bkzi",
+      "links": [
+        {
+          "platform": "Apple Music",
+          "url": "https://music.apple.com/us/album/%E6%84%9F%E6%83%85%E3%82%B3%E3%83%94%E3%83%BC-single/6818795861?uo=4"
+        },
+        {
+          "platform": "Spotify",
+          "url": "https://open.spotify.com/album/7pmF8zRKoF6kwvv532XTwC"
+        },
+        {
+          "platform": "YouTube Music",
+          "url": "https://music.youtube.com/playlist?list=OLAK5uy_nIrywTOcrmpJwohvJIKGVDKOSYUj0MqH4"
+        }
+      ]
+    },
+    {
+      "slug": "404-humanity",
+      "title": "404 Humanity",
+      "titleEn": null,
+      "type": "Single",
+      "releaseDate": "2026-10-30",
+      "artwork": "assets/artwork/404-humanity.jpg",
+      "preSaveUrl": null,
+      "links": []
+    },
+    {
+      "slug": "crimson-perfume",
+      "title": "Crimson Perfume",
+      "titleEn": null,
+      "type": "Single",
+      "releaseDate": "2026-11-20",
+      "artwork": "assets/artwork/crimson-perfume.jpg",
+      "preSaveUrl": null,
+      "links": []
+    },
+    {
+      "slug": "shinso",
+      "title": "心葬",
+      "titleEn": "Shinso",
+      "type": "Single",
+      "releaseDate": "2026-12-11",
+      "artwork": "assets/artwork/shinso.jpg",
+      "preSaveUrl": null,
+      "links": []
+    },
+    {
+      "slug": "denno-no-hitsugi",
+      "title": "電脳の棺",
+      "titleEn": "Denno no Hitsugi",
+      "type": "Single",
+      "releaseDate": "2027-01-01",
+      "artwork": "assets/artwork/denno-no-hitsugi.jpg",
+      "preSaveUrl": null,
+      "links": []
+    }
+  ]
+}
