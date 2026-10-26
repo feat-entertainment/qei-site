@@ -40,12 +40,16 @@ export function validateSite(site) {
   return site;
 }
 
+/** 文字列、または { ja: "...", en: "..." } のように言語ごとの空でない文字列(多言語対応) */
+const isLocalizedText = (v) =>
+  isText(v) || (v != null && typeof v === "object" && !Array.isArray(v) && Object.keys(v).length > 0 && Object.values(v).every(isText));
+
 export function validateNews(news) {
   if (!Array.isArray(news)) fail("news.json", "配列ではありません");
   news.forEach((n, i) => {
     const w = `news.json[${i}]`;
     if (!DATE_RE.test(n.date ?? "")) fail(w, `date が不正: ${n.date}`);
-    if (!isText(n.title)) fail(w, "title がありません");
+    if (!isLocalizedText(n.title)) fail(w, "title がありません(文字列か、言語ごとの文字列 { ja, en, ... })");
     if (n.url != null && !isHttps(n.url) && !/^\/[^/]/.test(n.url)) fail(w, "url は https か / 始まりにしてください");
   });
   return news;

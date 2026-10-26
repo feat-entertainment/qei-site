@@ -12,10 +12,10 @@ test("html は値をエスケープし raw はそのまま", () => {
   assert.equal(String(html`<p title="${'"<x>'}">${raw("<b>ok</b>")}</p>`), '<p title="&quot;&lt;x&gt;">' + "<b>ok</b></p>");
 });
 
-test("トップ 1 ページ + 404 + 曲ごとのシェア用ページを出力する", () => {
-  assert.deepEqual(Object.keys(render()).sort(), [
-    "404.html", "index.html", "releases/404-humanity/index.html", "releases/cached-emotion/index.html",
-  ]);
+test("言語ごとにトップ + 曲ごとのシェア用ページを出力し、404 は直下に 1 つ", () => {
+  const perLang = ["index.html", "releases/404-humanity/index.html", "releases/cached-emotion/index.html"];
+  const expected = ["404.html", ...["", "en/", "pt/", "zh/", "ko/"].flatMap((d) => perLang.map((f) => d + f))];
+  assert.deepEqual(Object.keys(render()).sort(), expected.sort());
 });
 
 test("トップに Discography・News・Contact のセクションがある", () => {
@@ -96,7 +96,7 @@ test("内部リンクはすべて出力ページ・assets・トップのセク�
   const pages = render();
   const exists = (href) => {
     const [p, frag] = href.replace(/^\//, "").split("#");
-    if (frag) return p === "" && pages["index.html"].includes(`id="${frag}"`);
+    if (frag) return (p === "" || p.endsWith("/")) && (pages[`${p}index.html`] ?? "").includes(`id="${frag}"`);
     return p === "" || p in pages || `${p}index.html` in pages || /^(assets\/|styles\.css(\?v=\w+)?$|main\.js(\?v=\w+)?$)/.test(p);
   };
   for (const [file, page] of Object.entries(pages)) {
@@ -150,4 +150,51 @@ test("各リンクにアイコンが付く(ブランドに無いものは音符)
   const paths = [spotify, amazon, mail, x].map((a) => a.match(svg)[1]);
   assert.equal(new Set(paths).size, 4, "アイコンがサービスごとに違う");
   assert.match(spotify, /Spotify<\/a>$/);
+});
+
+test("各言語のページは html の lang・言語の切り替え(同じページの 5 言語)・hreflang を持つ", () => {
+  const pages = render();
+  const langs = [["", "ja"], ["en/", "en"], ["pt/", "pt-BR"], ["zh/", "zh-Hans"], ["ko/", "ko"]];
+  for (const [dir, lang] of langs) {
+    for (const rest of ["", "releases/cached-emotion/"]) {
+      const page = pages[`${dir}${rest}index.html`];
+      assert.match(page, new RegExp(`<html lang="${lang}">`));
+      const sw = page.match(/<nav class="lang-switch"[^>]*>([\s\S]*?)<\/nav>/);
+      assert.ok(sw, `${dir}${rest} に言語の切り替えが無い`);
+      for (const [d] of langs) assert.ok(sw[1].includes(`href="/${d}${rest}"`), `${dir}${rest} → /${d}${rest} が無い`);
+      assert.match(sw[1], new RegExp(`href="/${dir}${rest}"[^>]*aria-current="page"`));
+      for (const [d, l] of langs) {
+        assert.ok(page.includes(`<link rel="alternate" hreflang="${l}" href="https://qei.feat-entertainment.com/${d}${rest}">`), `${dir}${rest} に hreflang ${l} が無い`);
+      }
+      assert.ok(page.includes(`<link rel="alternate" hreflang="x-default" href="https://qei.feat-entertainment.com/${rest}">`));
+    }
+  }
+});
+
+test("各言語のページは、その言語の文とリンク先を使い、AI 公言は全言語に残す", () => {
+  const f = fixture();
+  f.news = [];
+  f.site.releases = f.site.releases.filter((r) => r.slug === "404-humanity");
+  const pages = render(f);
+  assert.match(pages["index.html"], /お知らせはまだありません。/);
+  assert.match(pages["en/index.html"], /No news yet\./);
+  assert.match(pages["pt/index.html"], /Ainda não há novidades\./);
+  assert.match(pages["zh/index.html"], /暂无消息。/);
+  assert.match(pages["ko/index.html"], /아직 소식이 없습니다\./);
+  for (const d of ["", "en/", "pt/", "zh/", "ko/"]) assert.ok(pages[`${d}index.html`].includes(f.profile.aiNotice), `${d} に AI 公言が無い`);
+  const ko = render()["ko/index.html"];
+  assert.match(ko, /href="\/ko\/#discography"/);
+  assert.match(ko, /<a class="card-art" href="\/ko\/releases\/cached-emotion\/">/);
+  assert.match(ko, /공개 예정/);
+  assert.match(render()["en/index.html"], /For work requests and inquiries, please contact feat\.Entertainment\.llc\./);
+  assert.match(render()["en/releases/cached-emotion/index.html"], /href="\/en\/#discography"/);
+});
+
+test("お知らせは言語ごとに書け、無い言語は日本語を出す", () => {
+  const f = fixture();
+  f.news = [{ date: "2026-10-01", title: { ja: "日本語のお知らせ", en: "English news" } }];
+  const pages = render(f);
+  assert.match(pages["en/index.html"], /English news/);
+  assert.match(pages["pt/index.html"], /日本語のお知らせ/);
+  assert.match(pages["index.html"], /日本語のお知らせ/);
 });

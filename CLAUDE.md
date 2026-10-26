@@ -9,6 +9,7 @@
 - `data/site.json`・`assets/artwork/`・`assets/logo.jpg` は QEI Release Manager の「HP用に書き出し」が上書きする。手で編集しない(曲情報は RM で直す)
 - 手で編集するのは `data/news.json`(お知らせ)と `data/profile.json`(X・配信サービスのアーティストページ `artistLinks`・連絡先・AI 公言文。公言文はユーザー指定の英文で確定)だけ
 - 黒基調(ライトモードなし)。npm 依存を追加しない
+- **多言語(2026-10-27 ユーザー指示。NEKO KONEKO の公式サイトと同じ作り)**: 日本語(直下)・English(`/en/`)・Português(`/pt/`)・中文 簡体字(`/zh/`)・한국어(`/ko/`)。言語ごとの文は `src/i18n.mjs`(翻訳はネイティブ未確認)。ヘッダーの切り替えは今のページの各言語版へ移るだけ。曲名・AI 公言文(英文)はどの言語でもそのまま。お知らせの `title`/`body` は文字列か `{ ja, en, pt, zh, ko }`(無い言語は日本語)。404 は直下に 1 つ(日英併記)
 - 出力先 `site/` は git 管理外。GitHub Actions がビルドして Pages に配信する(毎日 JST 00:05 にも再ビルド)
 
 ## コマンド
