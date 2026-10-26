@@ -5,8 +5,8 @@
 /** dir: 出力先のフォルダ(日本語は直下)。hreflang / ogLocale はメタ情報用 */
 export const LANGS = [
   { code: "ja", dir: "", label: "日本語", hreflang: "ja", ogLocale: "ja_JP" },
-  { code: "en", dir: "en/", label: "EN", hreflang: "en", ogLocale: "en_US" },
-  { code: "pt", dir: "pt/", label: "PT", hreflang: "pt-BR", ogLocale: "pt_BR" },
+  { code: "en", dir: "en/", label: "English", hreflang: "en", ogLocale: "en_US" },
+  { code: "pt", dir: "pt/", label: "Português", hreflang: "pt-BR", ogLocale: "pt_BR" },
   { code: "zh", dir: "zh/", label: "中文", hreflang: "zh-Hans", ogLocale: "zh_CN" },
   { code: "ko", dir: "ko/", label: "한국어", hreflang: "ko", ogLocale: "ko_KR" },
 ];

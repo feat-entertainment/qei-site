@@ -16,13 +16,13 @@ const xHandle = (url) => `@${url.replace(/\/+$/, "").split("/").pop()}`;
 /** 配信サービスのアーティストページ(profile.json の artistLinks。無ければ空) */
 const artistLinkButtons = (profile) => (profile.artistLinks ?? []).map((l) => html` ${ext(l.url, l.platform, "btn", platformIcon(l.platform))}`);
 
-/** 言語の切り替え: 今のページの各言語版へのリンク */
+/** 言語の切り替え: 今の言語を押すと開くプルダウン。中身は今のページの各言語版へのリンク(JS なしでも開閉できる) */
 function langSwitch(lang, rest) {
-  return html`<nav class="lang-switch" aria-label="${t(lang).languageMenu}">${LANGS.map((l) =>
+  return html`<details class="lang-menu"><summary aria-label="${t(lang).languageMenu}">${icon("globe")}<span>${lang.label}</span></summary><nav class="lang-switch" aria-label="${t(lang).languageMenu}">${LANGS.map((l) =>
     l.code === lang.code
       ? html`<a href="${langPath(l, rest)}" lang="${l.hreflang}" aria-current="page">${l.label}</a>`
       : html`<a href="${langPath(l, rest)}" lang="${l.hreflang}" hreflang="${l.hreflang}">${l.label}</a>`,
-  )}</nav>`;
+  )}</nav></details>`;
 }
 
 /** rest: 言語フォルダより下の相対パス(トップは "")。null なら言語の切り替え・hreflang を出さない(404) */

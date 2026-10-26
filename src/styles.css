@@ -111,10 +111,17 @@ a:not(.btn) > .icon { display: inline-block; vertical-align: -0.18em; margin-rig
 
 /* 言語の切り替え(ヘッダー右端。2026-10-27 多言語対応) */
 .site-header { flex-wrap: wrap; }
-.lang-switch { display: flex; flex-wrap: wrap; gap: 4px; font-family: var(--mono); font-size: 0.78rem; }
-.lang-switch a { padding: 2px 8px; border: 1px solid var(--line); text-decoration: none; color: var(--muted); white-space: nowrap; }
-.lang-switch a:hover { color: var(--fg); border-color: var(--fg); }
-.lang-switch a[aria-current="page"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.lang-menu { position: relative; font-family: var(--mono); font-size: 0.8rem; }
+.lang-menu summary { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 1px solid var(--line); color: var(--muted); cursor: pointer; list-style: none; white-space: nowrap; user-select: none; }
+.lang-menu summary::-webkit-details-marker { display: none; }
+.lang-menu summary::after { content: ""; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid currentColor; transition: transform 0.15s; }
+.lang-menu[open] summary::after { transform: rotate(180deg); }
+.lang-menu summary:hover, .lang-menu[open] summary { color: var(--fg); border-color: var(--fg); }
+.lang-menu summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lang-switch { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; display: grid; min-width: 9.5em; padding: 4px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); }
+.lang-switch a { padding: 6px 10px; text-decoration: none; color: var(--muted); white-space: nowrap; }
+.lang-switch a:hover, .lang-switch a:focus-visible { color: var(--fg); background: var(--line); outline: none; }
+.lang-switch a[aria-current="page"] { color: var(--accent); }
 /* 中国語・韓国語のページは、その言語の字形のフォントを優先する */
 html:lang(zh-Hans) body { font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", var(--font); }
 html:lang(ko) body { font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", var(--font); }

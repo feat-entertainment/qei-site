@@ -25,4 +25,18 @@
     tick();
     setInterval(tick, 30_000);
   }
+
+  // 言語のプルダウン: 外側を押すか Esc で閉じる
+  const menu = document.querySelector(".lang-menu");
+  if (menu) {
+    document.addEventListener("click", (e) => {
+      if (menu.open && !menu.contains(e.target)) menu.open = false;
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && menu.open) {
+        menu.open = false;
+        menu.querySelector("summary").focus();
+      }
+    });
+  }
 })();

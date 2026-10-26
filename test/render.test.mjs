@@ -161,6 +161,7 @@ test("各言語のページは html の lang・言語の切り替え(同じペ�
       assert.match(page, new RegExp(`<html lang="${lang}">`));
       const sw = page.match(/<nav class="lang-switch"[^>]*>([\s\S]*?)<\/nav>/);
       assert.ok(sw, `${dir}${rest} に言語の切り替えが無い`);
+      assert.match(page, /<details class="lang-menu"><summary aria-label="[^"]+">[\s\S]*?<\/summary><nav class="lang-switch"/, `${dir}${rest} の言語の切り替えがプルダウンになっていない`);
       for (const [d] of langs) assert.ok(sw[1].includes(`href="/${d}${rest}"`), `${dir}${rest} → /${d}${rest} が無い`);
       assert.match(sw[1], new RegExp(`href="/${dir}${rest}"[^>]*aria-current="page"`));
       for (const [d, l] of langs) {
